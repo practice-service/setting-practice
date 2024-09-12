@@ -23,11 +23,9 @@ jobs:
         with:
           status: ${{ job.status }}
           author_name: Setting Backend - dev
-          fields: repo,commit,message,author, pr_number, pr_title
+          fields: repo,commit,message,author,pullRequest
           mention: here
           if_mention: failure,cancelled
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
         if: always()
