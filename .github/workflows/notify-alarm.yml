@@ -16,7 +16,7 @@ jobs:
         with:
           status: ${{ job.status }}
           author_name: Setting Backend - dev
-          fields: repo,commit,message,author,pr_number,pr_title
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest
           mention: here
           if_mention: failure,cancelled
         env:
