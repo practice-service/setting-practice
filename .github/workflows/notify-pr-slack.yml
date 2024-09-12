@@ -1,0 +1,17 @@
+name: Notify Slack on PR
+
+on:
+  push:
+    branches:
+      - tool/3-pr-slack-alarm
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send notification to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"PR #${{ github.event.number }} by ${{ github.event.pull_request.user.login }} is ${{ github.event.action }}. \n PR Title : ${{ github.event.pull_request.title }}"}' $SLACK_WEBHOOK_URL
