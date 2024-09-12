@@ -22,10 +22,12 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          author_name: Sloth Backend - dev
-          fields: repo,commit,message,author
+          author_name: Setting Backend - dev
+          fields: repo,commit,message,author, pr_number, pr_title
           mention: here
           if_mention: failure,cancelled
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         if: always()
