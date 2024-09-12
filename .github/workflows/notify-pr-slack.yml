@@ -10,8 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send notification to Slack
+      - name: send slack message
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: workflow,job,commit,message,ref,author,took
+        custom_payload: |
+          {
+            "text": "PR #${{ github.event.pull_request.number }} by ${{ github.event.pull_request.user.login }} is opened.\nTitle:\n${{ github.event.pull_request.title }}"
+          }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"PR #${{ github.event.pull_request.number }} by ${{ github.event.pull_request.user.login }} is ${{ github.event.action }}. \n PR Title : ${{ github.event.pull_request.title }}"}' $SLACK_WEBHOOK_URL
