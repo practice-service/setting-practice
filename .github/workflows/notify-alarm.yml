@@ -7,19 +7,36 @@ on:
 
 jobs:
   notify:
-
     runs-on: ubuntu-latest
-
     steps:
+      - name: Get PR Details
+        id: pr-details
+        run: |
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+
+      - name: Get Reviewers
+        id: get-reviewers
+        run: |
+          REVIEWERS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers" | \
+            jq -r '.users[].login' | sed 's/^/@/' | tr '\n' ' ')
+          echo "REVIEWERS=$REVIEWERS" >> $GITHUB_OUTPUT
+
       - name: Send Slack Notification
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           author_name: Setting Backend - dev
-          fields: repo,commit,message,author,pr_number,pr_title
+          fields: repo,commit,message,author
+          custom_payload: |
+            {
+              "attachments": [{
+                "color": "good",
+                "text": "새로운 PR이 열렸습니다!\nPR #${{ steps.pr-details.outputs.PR_NUMBER }}: ${{ steps.pr-details.outputs.PR_TITLE }}\n리뷰어: ${{ steps.get-reviewers.outputs.REVIEWERS }}"
+              }]
+            }
           mention: here
           if_mention: failure,cancelled
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          PR_NUMBER: ${{ github.pull_request.number }}
-          PR_TITLE: ${{ github.pull_request.title }}
