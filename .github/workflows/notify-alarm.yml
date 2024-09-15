@@ -15,28 +15,49 @@ jobs:
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
           echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
 
-      - name: Get Reviewers
-        id: get-reviewers
-        run: |
-          REVIEWERS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers" | \
-            jq -r '.users[].login' | sed 's/^/@/' | tr '\n' ' ')
-          echo "REVIEWERS=$REVIEWERS" >> $GITHUB_OUTPUT
-
       - name: Send Slack Notification
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
+          fields: repo,message,commit,author
           author_name: Setting Backend - dev
-          fields: repo,commit,message,author
+          mention: here
+          if_mention: failure,cancelled
+          text: |
+            New PR opened: <${{ github.event.pull_request.html_url }}|#${{ steps.pr-details.outputs.PR_NUMBER }}>
+            Title: ${{ steps.pr-details.outputs.PR_TITLE }}
           custom_payload: |
             {
               "attachments": [{
                 "color": "good",
-                "text": "새로운 PR이 열렸습니다!\nPR #${{ steps.pr-details.outputs.PR_NUMBER }}: ${{ steps.pr-details.outputs.PR_TITLE }}\n리뷰어: ${{ steps.get-reviewers.outputs.REVIEWERS }}"
+                "fields": [
+                  {
+                    "title": "Repository",
+                    "value": "${{ github.repository }}",
+                    "short": true
+                  },
+                  {
+                    "title": "PR Number",
+                    "value": "#${{ steps.pr-details.outputs.PR_NUMBER }}",
+                    "short": true
+                  },
+                  {
+                    "title": "PR Title",
+                    "value": "${{ steps.pr-details.outputs.PR_TITLE }}",
+                    "short": false
+                  },
+                  {
+                    "title": "Commit",
+                    "value": "${{ github.sha }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Author",
+                    "value": "${{ github.actor }}",
+                    "short": true
+                  }
+                ]
               }]
             }
-          mention: here
-          if_mention: failure,cancelled
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
