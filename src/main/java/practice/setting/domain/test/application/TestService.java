@@ -18,4 +18,8 @@ public class TestService {
             throw new IllegalArgumentException("test error");
         }
     }
+
+    public int addValueIfPositive(int value, int addValue) {
+        return value > 0 ? value + addValue : value;
+    }
 }
