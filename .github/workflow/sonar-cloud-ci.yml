@@ -3,7 +3,7 @@ name: develop(pull_request) Check Style And Test
 on:
   push:
     branches:
-      - develop
+      - feat/10-add-test-code
 jobs:
   test:
     runs-on: ubuntu-latest
