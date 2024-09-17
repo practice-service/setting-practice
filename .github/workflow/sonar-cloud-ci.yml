@@ -5,11 +5,10 @@ on:
     branches:
       - feat/10-add-test-code
 jobs:
-  test:
+  sonarcloud:
+    name: SonarCloud
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java-version: [ 17 ]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
