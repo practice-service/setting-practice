@@ -60,6 +60,8 @@ def jacocoExcludePatterns = [
 		"**/resources/**"
 ]
 
+def jacocoDir = layout.buildDirectory.dir("reports/")
+
 sonar {
 	properties {
 		property "sonar.projectKey", "practice-service"
@@ -72,6 +74,7 @@ sonar {
 		property 'sonar.test.inclusions', '**/*Test.java'
 		property 'sonar.java.coveragePlugin', 'jacoco'
 		property 'sonar.coverage.jacoco.xmlReportPaths', jacocoDir.get().file("jacoco/index.xml").asFile
+		property 'sonar.gradle.skipCompile', 'true'
 	}
 }
 
@@ -83,8 +86,6 @@ tasks.named('test') {
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'
 }
-
-def jacocoDir = layout.buildDirectory.dir("reports/")
 
 jacocoTestReport {
 	dependsOn test	// 테스트가 수행되어야만 report를 생성할 수 있도록 설정
