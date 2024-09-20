@@ -36,8 +36,10 @@ dependencies {
 }
 
 jacoco {
-	toolVersion = "0.8.8"
+	toolVersion = "0.8.12"
 }
+
+def jacocoDir = layout.buildDirectory.dir("reports/")
 
 def QDomains = []
 for (qPattern in '*.QA'..'*.QZ') { // qPattern = '*.QA', '*.QB', ... '*.QZ'
@@ -60,31 +62,33 @@ def jacocoExcludePatterns = [
 		"**/resources/**"
 ]
 
-def jacocoDir = layout.buildDirectory.dir("reports/")
+jacocoTestCoverageVerification {
 
-sonar {
-	properties {
-		property "sonar.projectKey", "practice-service_setting-practice"
-		property "sonar.organization", "practice-service"
-		property "sonar.host.url", "https://sonarcloud.io"
-		property 'sonar.sources', 'src'
-		property 'sonar.language', 'java'
-		property 'sonar.sourceEncoding', 'UTF-8'
-		property 'sonar.test.exclusions', jacocoExcludePatterns.join(',')
-		property 'sonar.test.inclusions', '**/*Test.java'
-		property 'sonar.java.coveragePlugin', 'jacoco'
-		property 'sonar.coverage.jacoco.xmlReportPaths', jacocoDir.get().file("jacoco/index.xml").asFile
-		property 'sonar.gradle.skipCompile', 'true'
+	violationRules {
+		rule {
+			// rule 활성화
+			enabled = true
+
+			// 클래스 단위로 룰 체크
+			element = 'CLASS'
+
+			// 라인 커버리지를 최소 80% 만족
+//			limit {
+//				counter = 'LINE'
+//				value = 'COVEREDRATIO'
+//				minimum = 0.80
+//			}
+
+			// 브랜치 커버리지를 최소 80% 만족
+//			limit {
+//				counter = 'BRANCH'
+//				value = 'COVEREDRATIO'
+//				minimum = 0.80
+//			}
+
+			excludes = jacocoExcludePatterns + QDomains
+		}
 	}
-}
-
-tasks.named('jacocoTestCoverageVerification') {
-	enabled = false // jacocoTestCoverageVerification 태스크 비활성화
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-	finalizedBy 'jacocoTestReport'
 }
 
 jacocoTestReport {
@@ -105,4 +109,29 @@ jacocoTestReport {
 				})
 		)
 	}
+	finalizedBy jacocoTestCoverageVerification
+}
+
+sonar {
+	properties {
+		property "sonar.projectKey", "practice-service_setting-practice"
+		property "sonar.organization", "practice-service"
+		property "sonar.host.url", "https://sonarcloud.io"
+		property 'sonar.sources', 'src'
+		property 'sonar.language', 'java'
+		property 'sonar.sourceEncoding', 'UTF-8'
+		property 'sonar.test.exclusions', jacocoExcludePatterns.join(',')
+		property 'sonar.test.inclusions', '**/*Test.java'
+		property 'sonar.java.coveragePlugin', 'jacoco'
+		property 'sonar.coverage.jacoco.xmlReportPaths', jacocoDir.get().file("jacoco/index.xml").asFile
+	}
+}
+
+tasks.named('jacocoTestCoverageVerification') {
+	enabled = false // jacocoTestCoverageVerification 태스크 비활성화
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
 }
