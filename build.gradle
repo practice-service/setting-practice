@@ -15,6 +15,12 @@ java {
 	}
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -33,6 +39,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
+}
+
+jar {
+	enabled = false
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
 }
 
 jacoco {
@@ -125,13 +140,4 @@ sonar {
 		property 'sonar.java.coveragePlugin', 'jacoco'
 		property 'sonar.coverage.jacoco.xmlReportPaths', jacocoDir.get().file("jacoco/index.xml").asFile
 	}
-}
-
-tasks.named('jacocoTestCoverageVerification') {
-	enabled = false // jacocoTestCoverageVerification 태스크 비활성화
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-	finalizedBy 'jacocoTestReport'
 }

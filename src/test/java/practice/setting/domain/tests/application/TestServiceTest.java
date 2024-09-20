@@ -1,4 +1,4 @@
-package practice.setting.domain.test.application;
+package practice.setting.domain.tests.application;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
