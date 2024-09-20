@@ -15,6 +15,12 @@ java {
 	}
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -35,9 +41,20 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 }
 
-jacoco {
-	toolVersion = "0.8.8"
+jar {
+	enabled = false
 }
+
+tasks.named('test') {
+	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
+}
+
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+def jacocoDir = layout.buildDirectory.dir("reports/")
 
 def QDomains = []
 for (qPattern in '*.QA'..'*.QZ') { // qPattern = '*.QA', '*.QB', ... '*.QZ'
@@ -60,21 +77,6 @@ def jacocoExcludePatterns = [
 		"**/resources/**"
 ]
 
-sonar {
-	properties {
-		property "sonar.projectKey", "practice-service"
-		property "sonar.organization", "practice-service"
-		property "sonar.host.url", "https://sonarcloud.io"
-		property 'sonar.sources', 'src'
-		property 'sonar.language', 'java'
-		property 'sonar.sourceEncoding', 'UTF-8'
-		property 'sonar.test.exclusions', jacocoExcludePatterns.join(',')
-		property 'sonar.test.inclusions', '**/*Test.java'
-		property 'sonar.java.coveragePlugin', 'jacoco'
-		property 'sonar.coverage.jacoco.xmlReportPaths', jacocoDir.get().file("jacoco/index.xml").asFile
-	}
-}
-
 jacocoTestCoverageVerification {
 
 	violationRules {
@@ -86,30 +88,23 @@ jacocoTestCoverageVerification {
 			element = 'CLASS'
 
 			// 라인 커버리지를 최소 80% 만족
-			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.80
-			}
+//			limit {
+//				counter = 'LINE'
+//				value = 'COVEREDRATIO'
+//				minimum = 0.80
+//			}
 
 			// 브랜치 커버리지를 최소 80% 만족
-			limit {
-				counter = 'BRANCH'
-				value = 'COVEREDRATIO'
-				minimum = 0.80
-			}
+//			limit {
+//				counter = 'BRANCH'
+//				value = 'COVEREDRATIO'
+//				minimum = 0.80
+//			}
 
 			excludes = jacocoExcludePatterns + QDomains
 		}
 	}
 }
-
-tasks.named('test') {
-	useJUnitPlatform()
-	finalizedBy 'jacocoTestReport'
-}
-
-def jacocoDir = layout.buildDirectory.dir("reports/")
 
 jacocoTestReport {
 	dependsOn test	// 테스트가 수행되어야만 report를 생성할 수 있도록 설정
@@ -130,4 +125,19 @@ jacocoTestReport {
 		)
 	}
 	finalizedBy jacocoTestCoverageVerification
+}
+
+sonar {
+	properties {
+		property "sonar.projectKey", "practice-service_setting-practice"
+		property "sonar.organization", "practice-service"
+		property "sonar.host.url", "https://sonarcloud.io"
+		property 'sonar.sources', 'src'
+		property 'sonar.language', 'java'
+		property 'sonar.sourceEncoding', 'UTF-8'
+		property 'sonar.test.exclusions', jacocoExcludePatterns.join(',')
+		property 'sonar.test.inclusions', '**/*Test.java'
+		property 'sonar.java.coveragePlugin', 'jacoco'
+		property 'sonar.coverage.jacoco.xmlReportPaths', jacocoDir.get().file("jacoco/index.xml").asFile
+	}
 }

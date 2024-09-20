@@ -1,14 +1,19 @@
 name: develop(pull_request) Check Style And Test
+
 on:
   pull_request:
     branches:
       - develop
+
 jobs:
-  test:
+  sonarcloud:
+    name: SonarCloud
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        java-version: [ 17 ]
+        java-version: [17]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

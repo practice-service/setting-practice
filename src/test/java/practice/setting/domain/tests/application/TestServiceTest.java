@@ -1,6 +1,5 @@
-package practice.setting.domain.test.application;
+package practice.setting.domain.tests.application;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,15 +13,13 @@ public class TestServiceTest {
     @Autowired private TestService testService;
 
     @Test
-    @DisplayName("테스트 메소드 참 반환")
-    public void testPositive() {
+    public void testPositive_Success_01() {
         int value = 1;
         assertThat(testService.isPositive(value)).isEqualTo(true);
     }
 
     @Test
-    @DisplayName("테스트 메소드 거짓 반환")
-    public void testNegative() {
+    public void testPositive_Success_02() {
         int value = -1;
         assertThat(testService.isPositive(value)).isEqualTo(false);
     }

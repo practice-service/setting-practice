@@ -1,4 +1,4 @@
-package practice.setting.domain.test.application;
+package practice.setting.domain.tests.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
