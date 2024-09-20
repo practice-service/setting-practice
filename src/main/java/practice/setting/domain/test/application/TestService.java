@@ -12,14 +12,4 @@ public class TestService {
     public boolean isPositive(int value) {
         return value > 0;
     }
-
-    public void validatePositive(int value) {
-        if (value <= 0) {
-            throw new IllegalArgumentException("test error");
-        }
-    }
-
-    public int addValueIfPositive(int value, int addValue) {
-        return value > 0 ? value + addValue : value;
-    }
 }
