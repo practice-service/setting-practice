@@ -64,7 +64,7 @@ def jacocoDir = layout.buildDirectory.dir("reports/")
 
 sonar {
 	properties {
-		property "sonar.projectKey", "practice-service"
+		property "sonar.projectKey", "practice-service_setting-practice"
 		property "sonar.organization", "practice-service"
 		property "sonar.host.url", "https://sonarcloud.io"
 		property 'sonar.sources', 'src'
