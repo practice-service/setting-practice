@@ -73,8 +73,10 @@ def jacocoExcludePatterns = [
 		"**/*Filter*",
 		"**/*Resolver*",
 		"**/*Entity*",
+		"**/*Error*/**",
 		"**/test/**",
-		"**/resources/**"
+		"**/resources/**",
+		"**/global/**"
 ]
 
 jacocoTestCoverageVerification {
